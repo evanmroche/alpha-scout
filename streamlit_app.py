@@ -1,6 +1,6 @@
 import streamlit as st
+import os
 
-st.title("🎈 My new app")
-st.write(
-    "Let's start building! For help and inspiration, head over to [docs.streamlit.io](https://docs.streamlit.io/)."
-)
+key = os.getenv('API_KEY')
+st.title("Alpha Scout, comparing bookmaker odds to find arbitrage opportunities.")
+st.write(key)
