@@ -21,7 +21,7 @@ with st.sidebar:
     with st.expander("Search", True):
         leagues = st.selectbox("Sports Leage:", api.allLeagues)
         regions = st.multiselect("Regions", api.allRegions, default='US')
-        markets = st.multiselect("Markets", api.allMarkets, default='Moneyline')
+        markets = st.multiselect("Markets", api.allMarkets, default='Moneyline', placeholder="All Bookmakers")
         bookmakers = st.multiselect("Bookmakers", api.allBookmakers, placeholder="All bookmakers")
 
 api = rq.ApiRequest(oddsFormat, betSize, timeZone, leagues, regions, markets, bookmakers, apiKey)
