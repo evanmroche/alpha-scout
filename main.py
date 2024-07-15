@@ -3,6 +3,7 @@ import pandas as pd
 from alpha_scout import apirequest as rq
 from alpha_scout import timeconvert as tc
 from alpha_scout import arbitrage as arb
+from alpha_scout import userinterface as ui
 
 
 st.set_page_config(layout='wide')
@@ -38,10 +39,14 @@ else:
         df_is_valid = False
 
 if df_is_valid:
-    df.drop('id', axis=1, inplace=True)
-    df.drop('sport_key', axis=1, inplace=True)
-    st.dataframe(df)
-
-    event_0 = df.iloc[0]
-    event_0_time = event_0['commence_time']
-    st.dataframe(event_0)
+    events = []
+    for row in df.iterrows():
+        events.append(arb.Event(row[1]))
+    for event in events:
+            event_container = ui.EventContainer()
+            event_container.writeCol(1, f"{event.sport_title}")
+            event_container.writeCol(2, f"{time_zone.toLocalTime(event.commence_time)}")
+            event_container.writeCol(3, f"{event.home_team}")
+            event_container.writeCol(3, "VS")
+            event_container.writeCol(3, f"{event.away_team}")
+            event_container.writeCol(5, f"Best odds")
