@@ -7,50 +7,35 @@ H2H_INDEX = 0
 SPREADS_INDEX = 1
 TOTALS_INDEX = 2
 
-class Request:
-    oddsFormat = None
-    betSize = None
-    timeZone = None
-    sportKey = None
-    regions = None
-    markets = None
-    bookmakers = None
-
-
 class Event:
-    def __init__(self, data):
+    def __init__(self, data, bet_size, bookmakers_allowed):
         self.data = data
         self.sport_key = data['sport_key']
         self.id = data['id']
         self.commence_time = data['commence_time']
         self.sport_title = data['sport_title']
+        self.bet_size = bet_size
+        self.bookmakers_allowed = bookmakers_allowed
 
-    def find_market(self, markets_list, market_key):
+    def findMarket(self, markets_list, market_key):
         for market in markets_list:
             if market.get('key') == market_key:
                 return market
         return None
 
-    def find_best_odds(self, market_key):
+    def findBestOdds(self, market_key):
         # finding the best odds for each outcome in each event
         best_odds = [[None, None, float('-inf')] for _ in range(2)]
         # [Bookmaker, Name, Price]
 
         bookmakers = self.data['bookmakers']
         for index, bookmaker in enumerate(bookmakers):
-            # Debugging
-            print(f'Bookmaker: {bookmaker}')
-            print(self.find_market(bookmaker['markets'], market_key))
-
             # Sets current market
-            current_market = self.find_market(bookmaker['markets'], market_key)
-
-            print(current_market)
+            current_market = self.findMarket(bookmaker['markets'], market_key)
 
             # Set num_outcomes
             num_outcomes = len(current_market['outcomes'])
             self.num_outcomes = num_outcomes
-
 
             # Determine the odds offered by each bookmaker
             for outcome in range(num_outcomes):
@@ -62,7 +47,7 @@ class Event:
                     current_best_odds = best_odds[outcome][ODDS_INDEX]
 
                     # Edited this if statement to check bookmakers
-                    if bookmaker_odds > current_best_odds and bookmaker['key'] in BOOKMAKERS_ALLOWED:
+                    if bookmaker_odds > current_best_odds and bookmaker['key'] in self.bookmakers_allowed:
                         best_odds[outcome][BOOKMAKER_INDEX] = bookmaker['title']
                         if current_market['outcomes'][outcome].get('point', 0):
                             best_odds[outcome][NAME_INDEX] = current_market['outcomes'][outcome]['name'] + ' ' + str(bookmaker['markets'][FIRST]['outcomes'][outcome].get('point'))
@@ -100,11 +85,10 @@ class Event:
                 
             market = total_arbitrage_percentage
             if total_arbitrage_percentage != 0:
-                market = (BET_SIZE / total_arbitrage_percentage) - BET_SIZE
+                market = (self.bet_size / total_arbitrage_percentage) - self.bet_size
             else:
                 print("Error: total_arbitrage_percentage is zero")
                 market = None
-           
 
         # if the sum of the reciprocals of the odds is less than 1, there is opportunity for arbitrage
         for market in self.all_markets_best_odds:
