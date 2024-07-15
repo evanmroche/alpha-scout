@@ -116,7 +116,7 @@ class Event:
         bet_amounts = []
         for outcome in range(self.num_outcomes):
             individual_arbitrage_percentage = 1 / self.best_odds[outcome][ODDS_INDEX]
-            bet_amount = (BET_SIZE * individual_arbitrage_percentage) / self.total_arbitrage_percentage
+            bet_amount = (self.bet_size * individual_arbitrage_percentage) / self.total_arbitrage_percentage
             bet_amounts.append(round(bet_amount, 2))
         
         self.bet_amounts = bet_amounts
