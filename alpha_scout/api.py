@@ -1,14 +1,9 @@
 import requests
 import streamlit as st
 import pandas as pd
+from alpha_scout import options
 
 class ApiRequest:
-    odds_formats = {'Decimal':'decimal', 'American':'american'}
-    all_leagues = {'Upcoming':'upcoming','NFL':'americanfootball_nfl','NBA':'basketball_nba','MLB':'baseball_mlb'}
-    all_regions = {'US':'us', 'US2':'us2', 'UK':'uk', 'EU':'eu'}
-    all_markets = {'Moneyline':'h2h', 'Spreads':'spreads', 'Totals':'totals'}
-    all_bookmakers = {'FanDuel':'fanduel', 'DraftKings':'draftkings', 'BetMGM':'betmgm', 'Caesars':'williamhill_us'}
-
     # List is an array of titles, list_dict is a dictionary mapping titles to strings
     def listToStr(self, list, list_dict):
         temp_str = ''
@@ -41,38 +36,37 @@ class ApiRequest:
     def init(cls):
         return cls
 
-    def __init__(self, time_zone, league, regions, markets, bookmakers, api_key):
+    def __init__(self, time_zone, league, regions, markets, api_key):
         self.time_zone = time_zone
-        self.sport_key = self.listToStr(league, self.all_leagues)
-        self.regions = self.listToStr(regions, self.all_regions)
-        self.markets = self.listToStr(markets, self.all_markets)
-        self.bookmakers = bookmakers
+        self.sport_key = self.listToStr(league, options.all_leagues)
+        self.regions = self.listToStr(regions, options.all_regions)
+        self.markets = self.listToStr(markets, options.all_markets)
         self.api_key = api_key
 
 class Outcome:
-    def __init__(self, outcomeDict):
-        self.name = outcomeDict['name']
-        self.price = outcomeDict['price']
-        if 'point' in outcomeDict:
-            self.point = outcomeDict['point']
-        if 'description' in outcomeDict:
-            self.description = outcomeDict['description']
+    def __init__(self, outcome_dict):
+        self.name = outcome_dict['name']
+        self.price = outcome_dict['price']
+        if 'point' in outcome_dict:
+            self.point = outcome_dict['point']
+        if 'description' in outcome_dict:
+            self.description = outcome_dict['description']
 
 class Market:
-    def __init__(self, marketDict):
-        self.key = marketDict['key']
-        self.last_update = marketDict['last_update']
+    def __init__(self, market_dict):
+        self.key = market_dict['key']
+        self.last_update = market_dict['last_update']
         self.outcomes = []
-        for outcome in marketDict['outcomes']:
+        for outcome in market_dict['outcomes']:
             self.outcomes.append(Outcome(outcome))
 
 class Bookmaker:
-    def __init__(self, bookmakerDict):
-        self.key = bookmakerDict['key']
-        self.title = bookmakerDict['title']
-        self.last_update = bookmakerDict['last_update']
+    def __init__(self, bookmaker_dict):
+        self.key = bookmaker_dict['key']
+        self.title = bookmaker_dict['title']
+        self.last_update = bookmaker_dict['last_update']
         self.markets = []
-        for market in bookmakerDict['markets']:
+        for market in bookmaker_dict['markets']:
             self.markets.append(Market(market))
 
 class Event:

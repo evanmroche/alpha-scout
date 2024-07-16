@@ -4,8 +4,9 @@ from alpha_scout import api
 from alpha_scout import timeconvert as tc
 from alpha_scout import arbitrage as arb
 from alpha_scout import userinterface as ui
+from alpha_scout import options
 
-def main():
+def main():    
     st.set_page_config(layout='wide')
     with st.sidebar:
         st.title("Alpha Scout")
@@ -14,16 +15,16 @@ def main():
         
         with st.expander("Formatting", True):
             bet_size = st.number_input("Bet Size", min_value=10, max_value=1000000, step=25, value=100)
-            odds_format = st.selectbox("Odds Format", api.ApiRequest.odds_formats, index=0)
-            time_zone = tc.TimeZone(st.selectbox("Local Timezone", tc.TimeZone.all_time_zones))
+            odds_format = st.selectbox("Odds Format", options.odds_formats, index=0)
+            time_zone = tc.TimeZone(st.selectbox("Local Timezone", options.all_time_zones))
 
         with st.expander("Search", True):
-            leagues = st.selectbox("Sports Leage:", api.ApiRequest.all_leagues)
-            regions = st.multiselect("Regions", api.ApiRequest.all_regions, default='US')
-            markets = st.multiselect("Markets", api.ApiRequest.all_markets, default='Moneyline', placeholder="All Bookmakers")
-            bookmakers = st.multiselect("Bookmakers", api.ApiRequest.all_bookmakers, placeholder="All bookmakers")
+            leagues = st.selectbox("Sports Leage:", options.all_leagues)
+            regions = st.multiselect("Regions", options.all_regions, default='US')
+            markets = st.multiselect("Markets", options.all_markets, default='Moneyline', placeholder="All Bookmakers")
+            bookmakers = st.multiselect("Bookmakers", options.all_bookmakers, placeholder="All bookmakers")
 
-    api_rq = api.ApiRequest(time_zone, leagues, regions, markets, bookmakers, api_key)
+    api_rq = api.ApiRequest(time_zone, leagues, regions, markets, api_key)
 
     if st.button("Search for Odds"):
         df = api_rq.callAPI()
@@ -48,7 +49,20 @@ def main():
                 event_container.writeCol(3, f"{event.home_team}")
                 event_container.writeCol(3, "VS")
                 event_container.writeCol(3, f"{event.away_team}")
+
+                arbitrage = arb.Arbitrage(event)
+                best_home_bookmaker = arbitrage.findBestH2hOdds(event.home_team, bookmakers)
+                best_home_odds = arb.Arbitrage.findTeamOdds(event.home_team, 'h2h', best_home_bookmaker)
+                best_away_bookmaker = arbitrage.findBestH2hOdds(event.away_team, bookmakers)
+                best_away_odds = arb.Arbitrage.findTeamOdds(event.away_team, 'h2h', best_away_bookmaker)
+                if odds_format == 'American':
+                    best_home_odds = arb.Arbitrage.decimalToAmerican(best_home_odds)
+                    best_away_odds = arb.Arbitrage.decimalToAmerican(best_away_odds)
+                event_container.writeCol(5, f"{best_home_bookmaker.title}: {best_home_odds}")
                 event_container.writeCol(5, f"Best odds")
+                event_container.writeCol(5, f"{best_away_bookmaker.title}: {best_away_odds}")
+
+                
 
 if __name__ == '__main__':
     main() 
