@@ -50,17 +50,18 @@ def main():
                 event_container.writeCol(3, "VS")
                 event_container.writeCol(3, f"{event.away_team}")
 
-                arbitrage = arb.Arbitrage(event)
-                best_home_bookmaker = arbitrage.findBestH2hOdds(event.home_team, bookmakers)
-                best_home_odds = arb.Arbitrage.findTeamOdds(event.home_team, 'h2h', best_home_bookmaker)
-                best_away_bookmaker = arbitrage.findBestH2hOdds(event.away_team, bookmakers)
-                best_away_odds = arb.Arbitrage.findTeamOdds(event.away_team, 'h2h', best_away_bookmaker)
+                arbitrage = arb.ArbitrageEvent(event, bookmakers, 'h2h')
                 if odds_format == 'American':
-                    best_home_odds = arb.Arbitrage.decimalToAmerican(best_home_odds)
-                    best_away_odds = arb.Arbitrage.decimalToAmerican(best_away_odds)
-                event_container.writeCol(5, f"{best_home_bookmaker.title}: {best_home_odds}")
+                    best_home_odds = arb.decimalToAmerican(arbitrage.home_odds)
+                    best_away_odds = arb.decimalToAmerican(arbitrage.away_odds)
+                else:
+                    best_home_odds = arbitrage.home_odds
+                    best_away_odds = arbitrage.away_odds
+                event_container.writeCol(5, f"{arbitrage.home_bookmaker.title}: {best_home_odds}")
                 event_container.writeCol(5, f"Best odds")
-                event_container.writeCol(5, f"{best_away_bookmaker.title}: {best_away_odds}")
+                event_container.writeCol(5, f"{arbitrage.away_bookmaker.title}: {best_away_odds}")
+                event_container.writeCol(6, f"Arbitrage Percentage")
+                event_container.writeCol(6, f"{arbitrage.arbitrage_percentage}%")
 
                 
 

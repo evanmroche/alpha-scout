@@ -1,6 +1,5 @@
 from datetime import datetime
 import pytz as tz
-import streamlit as st
 from alpha_scout import options
 
 class TimeZone:
