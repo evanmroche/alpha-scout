@@ -31,8 +31,16 @@ def findTeamOdds(team_name, market_key, bookmaker: api.Bookmaker):
 def calculateArbitragePercentage(home_odds, away_odds):
     return round((100 - (((1 / home_odds) * 100) + ((1 / away_odds) * 100))), 2)
 
+def calculateBetAmounts(total_bet_amount, home_odds, away_odds):
+    home_arb_percentage = 1 / home_odds * 100
+    away_arb_percentage = 1 / away_odds * 100
+    total_arb_percentage = home_arb_percentage + away_arb_percentage
+    home_bet_amount = round(total_bet_amount * home_arb_percentage / (total_arb_percentage), 2)
+    away_bet_amount = round(total_bet_amount * away_arb_percentage / (total_arb_percentage), 2)
+    return {'home_bet_amount':home_bet_amount, 'away_bet_amount':away_bet_amount}
+
 class ArbitrageEvent:
-    def __init__(self, event : api.Event, bookmakers, market):
+    def __init__(self, event : api.Event, bookmakers, market, bet_amount):
         self.event = event
         self.home_bookmaker = findBestH2hOdds(event, event.home_team, bookmakers)
         self.away_bookmaker = findBestH2hOdds(event, event.away_team, bookmakers)
@@ -50,4 +58,9 @@ class ArbitrageEvent:
             st.error("No arbitrage found!")
         else:
             self.arbitrage_percentage = calculateArbitragePercentage(self.home_odds, self.away_odds)
+            self.home_bet_amount = calculateBetAmounts(bet_amount, self.home_odds, self.away_odds)['home_bet_amount']
+            self.away_bet_amount = calculateBetAmounts(bet_amount, self.home_odds, self.away_odds)['away_bet_amount']
             self.has_arbitrage = True if self.arbitrage_percentage > 0.25 else False
+
+    def calculateArbitrageProfit(self):
+        pass
