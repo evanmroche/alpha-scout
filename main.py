@@ -70,6 +70,7 @@ def main():
                     event_container.writeCol(5, f"{arbitrage.away_bookmaker.title}: {best_away_odds}")
                     event_container.writeCol(6, f"${arbitrage.home_bet_amount}")
                     event_container.writeCol(6, f"${arbitrage.away_bet_amount}")
+                    event_container.writeCol(7, f"\${arbitrage.home_win_profit} - \${arbitrage.away_win_profit}")
                     
 
 if __name__ == '__main__':
