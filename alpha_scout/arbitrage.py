@@ -29,10 +29,11 @@ class ArbitrageEvent:
             self.has_arbitrage = False
             st.error("No arbitrage found!")
         else:
+            self.inverse_price = self.calculateInversePrice()
             self.arbitrage_percentage = self.calculateArbitragePercentage()
             self.home_bet_amount = self.calculateBetAmounts()['home_bet_amount']
             self.away_bet_amount = self.calculateBetAmounts()['away_bet_amount']
-            self.has_arbitrage = True if self.arbitrage_percentage > 0.25 else False
+            self.has_arbitrage = True if self.inverse_price < 1 else False
             self.calculateArbitrageProfit()
 
     def calculateArbitrageProfit(self):
@@ -58,9 +59,12 @@ class ArbitrageEvent:
                 for outcome in market.outcomes:
                     if outcome.name == team_name:
                         return outcome.price
+    
+    def calculateInversePrice(self):
+        return (1 / self.home_odds) + (1 / self.away_odds)
 
     def calculateArbitragePercentage(self):
-        return round((100 - (((1 / self.home_odds) * 100) + ((1 / self.away_odds) * 100))), 2)
+        return round((100 / self.inverse_price - 100), 2)
 
     def calculateBetAmounts(self):
         home_arb_percentage = 1 / self.home_odds * 100
