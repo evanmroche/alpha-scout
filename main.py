@@ -58,17 +58,26 @@ def main():
                     event_container.writeCol(2, f"{event.sport_title}")
                     event_container.writeCol(3, f"{time_zone.toLocalTime(event.commence_time)}")
                     event_container.writeCol(4, f"{event.home_team}")
+                    if arbitrage.has_draw:
+                        event_container.writeCol(4, f"Draw")
                     event_container.writeCol(4, f"{event.away_team}")
 
                     if odds_format == 'American':
                         best_home_odds = arb.decimalToAmerican(arbitrage.home_odds)
                         best_away_odds = arb.decimalToAmerican(arbitrage.away_odds)
+                        best_draw_odds = arb.decimalToAmerican(arbitrage.draw_odds)
                     else:
                         best_home_odds = arbitrage.home_odds
                         best_away_odds = arbitrage.away_odds
+                        if arbitrage.has_draw:
+                            best_draw_odds = arbitrage.draw_odds
                     event_container.writeCol(5, f"{arbitrage.home_bookmaker.title}: {best_home_odds}")
+                    if arbitrage.has_draw:
+                        event_container.writeCol(5, f"{arbitrage.draw_bookmaker.title}: {best_draw_odds}")
                     event_container.writeCol(5, f"{arbitrage.away_bookmaker.title}: {best_away_odds}")
                     event_container.writeCol(6, f"${arbitrage.home_bet_amount}")
+                    if arbitrage.has_draw:
+                        event_container.writeCol(6, f"\${arbitrage.draw_bet_amount}")
                     event_container.writeCol(6, f"${arbitrage.away_bet_amount}")
                     event_container.writeCol(7, f"\${arbitrage.home_win_profit} - \${arbitrage.away_win_profit}")
                     
