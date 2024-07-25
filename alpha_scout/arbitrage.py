@@ -23,13 +23,16 @@ class ArbitrageEvent:
         self.chosen_bookmakers = chosen_bookmakers
         self.home_bookmaker = self.findBestBookmaker(event.home_team, market)
         self.away_bookmaker = self.findBestBookmaker(event.away_team, market) 
-        for outcome in event.bookmakers[0].markets[0].outcomes:
-            if outcome.name == 'Draw':
-                self.has_draw = True
-                self.draw_bookmaker = self.findBestBookmaker('Draw', market)
-                self.draw_odds = self.findTeamOdds('Draw', self.draw_bookmaker)
-            else:
-                self.has_draw = False
+        self.has_draw = False
+        for bookmaker in event.bookmakers:
+            # The 0 index used in this line is the index for the h2h market,
+            # if using different markets this index must be changed 
+            for outcome in bookmaker.markets[0].outcomes:
+                if outcome.name == 'Draw':
+                    self.has_draw = True
+                    self.draw_bookmaker = self.findBestBookmaker('Draw', market)
+                    self.draw_odds = self.findTeamOdds('Draw', self.draw_bookmaker)
+                        
         self.bet_amount = bet_amount
         self.home_odds = self.findTeamOdds(event.home_team, self.home_bookmaker)
         self.away_odds = self.findTeamOdds(event.away_team, self.away_bookmaker)

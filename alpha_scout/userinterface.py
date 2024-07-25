@@ -1,6 +1,31 @@
 import streamlit as st
 
 
+def formatPage():
+    st.markdown("""
+                <style>
+                    .appview-container .main .block-container {{
+                        padding-top: {padding_top}rem;
+                        padding-bottom: {padding_bottom}rem;
+                        }}
+
+                </style>""".format(padding_top=3, padding_bottom=1),unsafe_allow_html=True)
+    
+    st.markdown("""
+                <style>
+                .st-emotion-cache-yfhhig {
+                        display: none;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
+    
+    st.markdown("""
+                <style>
+                    .st-emotion-cache-1itdyc2 {
+                    margin-top: -75px;
+                    }
+                </style>
+                """, unsafe_allow_html=True)
 class EventContainer:
     def __init__(self):
         self.container = st.container(border=True)
