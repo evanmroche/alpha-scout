@@ -2,6 +2,7 @@ import streamlit as st
 
 
 def formatPage():
+    # Styling main portion of page
     st.markdown("""
                 <style>
                     .appview-container .main .block-container {{
@@ -10,22 +11,17 @@ def formatPage():
                         }}
 
                 </style>""".format(padding_top=3, padding_bottom=1),unsafe_allow_html=True)
-    
-    st.markdown("""
-                <style>
-                .st-emotion-cache-yfhhig {
-                        display: none;
-                    }
-                </style>
-                """, unsafe_allow_html=True)
-    
+
+    # Styling sidebar
     st.markdown("""
                 <style>
                     .st-emotion-cache-1itdyc2 {
                     margin-top: -75px;
+                    margin-bottom: -75px;
                     }
                 </style>
                 """, unsafe_allow_html=True)
+    
 class EventContainer:
     def __init__(self):
         self.container = st.container(border=True)

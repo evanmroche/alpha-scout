@@ -62,6 +62,9 @@ class ArbitrageEvent:
                             if outcome.name == team_name and outcome.price > best_price:
                                 best_price = outcome.price
                                 best_price_bookmaker = bookmaker
+        if best_price_bookmaker == None:
+            st.error("Failed to find odds from current bookmakers! Please select more bookmakers to see more games!")
+            st.stop()
         return best_price_bookmaker
 
     def findTeamOdds(self, team_name, bookmaker: api.Bookmaker):
